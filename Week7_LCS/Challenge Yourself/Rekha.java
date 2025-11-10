@@ -1,11 +1,12 @@
 import java.util.*;
 
-public class Rekha {
+public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        String seq1 = sc.nextLine();
-        String seq2 = sc.nextLine();
+        String seq1 = sc.nextLine().trim();
+        String seq2 = sc.nextLine().trim();
         sc.close();
+
         int m = seq1.length();
         int n = seq2.length();
 
@@ -22,9 +23,10 @@ public class Rekha {
         }
 
         int lcsLength = dp[m][n];
-        Set<String> lcsSet = new HashSet<>();
+        // LinkedHashSet preserves insertion order (discovery order)
+        Set<String> lcsSet = new LinkedHashSet<>();
 
-        backtrack(seq1, seq2, m, n, dp, new StringBuilder(), lcsSet);
+        backtrack(seq1, seq2, m, n, dp, new StringBuilder(), lcsSet, lcsLength);
 
         System.out.println("All possible unique LCS combinations:");
         for (String lcs : lcsSet) {
@@ -34,29 +36,33 @@ public class Rekha {
     }
 
     private static void backtrack(String s1, String s2, int i, int j, int[][] dp, StringBuilder current,
-            Set<String> result) {
+            Set<String> result, int targetLength) {
+        if (current.length() == targetLength) {
+            // current holds characters in reverse order, create reversed string without mutating current
+            String lcs = new StringBuilder(current).reverse().toString();
+            result.add(lcs);
+            return;
+        }
+
         if (i == 0 || j == 0) {
-            String lcs = current.reverse().toString();
-            current.reverse();
-            if (lcs.length() == dp[s1.length()][s2.length()]) {
-                result.add(lcs);
-            }
             return;
         }
 
         if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
             current.append(s1.charAt(i - 1));
-            backtrack(s1, s2, i - 1, j - 1, dp, current, result);
+            backtrack(s1, s2, i - 1, j - 1, dp, current, result, targetLength);
             current.deleteCharAt(current.length() - 1);
         } else {
             if (dp[i - 1][j] > dp[i][j - 1]) {
-                backtrack(s1, s2, i - 1, j, dp, current, result);
+                backtrack(s1, s2, i - 1, j, dp, current, result, targetLength);
             } else if (dp[i][j - 1] > dp[i - 1][j]) {
-                backtrack(s1, s2, i, j - 1, dp, current, result);
+                backtrack(s1, s2, i, j - 1, dp, current, result, targetLength);
             } else {
-                backtrack(s1, s2, i - 1, j, dp, current, result);
-                backtrack(s1, s2, i, j - 1, dp, current, result);
+                // equal -> explore both; order matters for discovery order
+                backtrack(s1, s2, i - 1, j, dp, current, result, targetLength);
+                backtrack(s1, s2, i, j - 1, dp, current, result, targetLength);
             }
         }
     }
 }
+
