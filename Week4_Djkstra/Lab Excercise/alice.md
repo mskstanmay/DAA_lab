@@ -1,10 +1,6 @@
-Alice is working on a delivery system for an e-commerce platform. The system uses a network of delivery hubs (routers) connected by roads (links), each with a certain time required for a delivery. 
+Alice is working on a delivery system for an e-commerce platform. The system uses a network of delivery hubs (routers) connected by roads (links), each with a certain time required for a delivery.
 
-
-
-Alice needs to find the fastest route for a package from a source hub to a destination hub. She will input the number of hubs, the number of roads, and the details of the roads connecting the hubs. 
-
-
+Alice needs to find the fastest route for a package from a source hub to a destination hub. She will input the number of hubs, the number of roads, and the details of the roads connecting the hubs.
 
 The program will then use Dijkstra's algorithm to find and print the shortest delivery time between the source hub and the destination hub.
 
@@ -25,8 +21,6 @@ The output prints the shortest delivery times from the source hub to all other h
 Each line should contain two integers separated by a space, representing the hub and its shortest delivery time from the source.
 
 Each line should contain two integers separated by a space, representing the router and its distance from the source.
-
-
 
 Refer to the sample output for the formatting specifications.
 

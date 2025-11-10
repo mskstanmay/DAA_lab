@@ -1,91 +1,66 @@
-import java.util.Scanner;
-
-class Main {
-    public static void merge(int[] arr, int left, int mid, int right) {
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
-
-        int[] L = new int[n1];
-        int[] R = new int[n2];
-
-        System.arraycopy(arr, left, L, 0, n1);
-        System.arraycopy(arr, mid + 1, R, 0, n2);
-
-        int i = 0, j = 0;
-        int k = left;
-
-        while (i < n1 && j < n2) {
-            if (L[i] <= R[j]) {
-                arr[k] = L[i];
-                i++;
-            } else {
-                arr[k] = R[j];
-                j++;
-            }
-            k++;
-        }
-
-        while (i < n1) {
-            arr[k] = L[i];
-            i++;
-            k++;
-        }
-
-        while (j < n2) {
-            arr[k] = R[j];
-            j++;
-            k++;
-        }
-    }
-    public static int findDigitSum(int num) {
-        int sum = 0;
-        while (num > 0) {
-            sum += num % 10;
-            num /= 10;
-        }
-        return sum;
-    }
-    public static void mergeSort(int[] arr, int left, int right) {
-        if (left < right) {
-            int mid = left + (right - left) / 2;
-
-            mergeSort(arr, left, mid);
-            mergeSort(arr, mid + 1, right);
-
-            merge(arr, left, mid, right);
-        }
-    }
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int n = scanner.nextInt();
-
-        int[] arr = new int[n];
-        for (int i = 0; i < n; i++) {
-            arr[i] = scanner.nextInt();
-        }
-
-        mergeSort(arr, 0, n - 1);
-
-        int maxDigitSum = 0;
-        int maxDigitSumElement = 0;
-
-        for (int i = 0; i < n; i++) {
-            int digitSum = findDigitSum(arr[i]);
-            if (digitSum > maxDigitSum) {
-                maxDigitSum = digitSum;
-                maxDigitSumElement = arr[i];
+import java.util.*;
+// You are using Java
+class Main{
+    public static void main(String[] args){
+        Scanner sc = new Scanner(System.in);
+        int N = sc.nextInt();
+        
+        int[][]  cost = new int[N][N];
+        
+        for(int i = 0; i< N; i++){
+            for(int j = 0;j<N; j++){
+                cost[i][j] =  sc.nextInt();
             }
         }
-
-        System.out.print("The sorted array is: ");
-        for (int i = 0; i < n; i++) {
-            System.out.print(arr[i] + " ");
+        
+        
+        int[]  key = new int[N];
+        boolean[] mstset = new boolean[N];
+        int[] parent = new int[N];
+        
+        Arrays.fill(key,Integer.MAX_VALUE);
+        key[0] = 0;
+        parent[0] = -1;
+        for(int count = 0; count < N-1;count ++){
+            int u = minkey(key,mstset,N);
+            mstset[u] = true;
+            
+            for(int v = 0; v < N;v++){
+                if(cost[u][v] != 0 && !mstset[v]  && cost[u][v] < key[v]){
+                    parent[v] = u;
+                    
+                    key[v] = cost[u][v];
+                }
+            }
         }
-        System.out.println();
-
-        System.out.print("The integer with the highest digit sum is: " + maxDigitSumElement);
-
-        scanner.close();
+        System.out.println("Spanning Tree Matrix:");
+        int[][] mstmatrix = new int[N][N];
+        int totalcost = 0;
+        for(int i  = 1;i<N;i++){
+            mstmatrix[i][parent[i]] = cost[i][parent[i]];
+            mstmatrix[parent[i]][i] = cost[i][parent[i]];
+            totalcost +=cost[i][parent[i]];
+        }
+        
+        for (int i = 0;i<N;i++){
+            for (int j = 0;j<N;j++){
+                System.out.print(mstmatrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println("Total Cost: " + totalcost);
+        
     }
+    static int minkey(int[] key, boolean[] mstset, int N){
+        int min = Integer.MAX_VALUE,minindex = -1;
+        for(int v = 0;v<N;v++){
+            if(!mstset[v] && key[v] < min){
+                min = key[v];
+                minindex = v;
+            }
+        }
+        return minindex;
+    } 
+    
+    
 }

@@ -51,6 +51,44 @@ class ram {
         printSolution(dist, numRouters);
     }
 
+
+    // Function to implement Bellman-Ford's algorithm
+    // This is a "simpler" alternative to Dijkstra's
+    private static void bellmanFord(int[][] graph, int src, int numRouters) {
+        // Step 1: Initialize distances array
+        int[] dist = new int[numRouters]; 
+        for (int i = 0; i < numRouters; i++) {
+            dist[i] = Integer.MAX_VALUE;
+        }
+        dist[src] = 0;
+
+        // Step 2: "Relax" all edges (links) V-1 times
+        // (V is numRouters)
+        for (int i = 1; i < numRouters; i++) {
+            // Iterate over all possible edges.
+            // In an adjacency matrix, this means two loops.
+            for (int u = 0; u < numRouters; u++) {
+                for (int v = 0; v < numRouters; v++) {
+                    // Check if a link (edge) exists from u to v
+                    // and if path to u is not infinity
+                    if (graph[u][v] != 0 && dist[u] != Integer.MAX_VALUE) {
+                        
+                        // This is the "relax" step:
+                        // Is the path via u shorter than the current known path to v?
+                        if (dist[u] + graph[u][v] < dist[v]) {
+                            dist[v] = dist[u] + graph[u][v];
+                        }
+                    }
+                }
+            }
+        }
+        
+        // (Optional: Bellman-Ford can also detect negative-weight cycles
+        // by running the loop one more time, but we don't need that here.)
+
+        // Step 3: Print the solution (same function as before)
+        printSolution(dist, numRouters);
+    }
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -71,7 +109,7 @@ class ram {
         int destination = scanner.nextInt();
 
         // Run Dijkstra's algorithm
-        dijkstra(graph, source, numRouters);
+        bellmanFord(graph, source, numRouters);
 
         scanner.close();
     }

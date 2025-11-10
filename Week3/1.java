@@ -1,71 +1,69 @@
-import java.util.*;
+import java.util.Scanner;
 
-class NumberAnalyzer {
-    private List<Integer> numbers;
+class PrimMST {
+    private static final int MAX_V = 10;
+    private static final int INF = Integer.MAX_VALUE;
 
-    public NumberAnalyzer(List<Integer> numbers) {
-        this.numbers = numbers;
+    int minKey(int key[], boolean mstSet[], int V) {
+        int min = INF, min_index = -1;
+
+        for (int v = 0; v < V; v++)
+            if (!mstSet[v] && key[v] < min) {
+                min = key[v];
+                min_index = v;
+            }
+
+        return min_index;
     }
 
-    private int digitSum(int num) {
-        int sum = 0;
-        while (num > 0) {
-            sum += num % 10;
-            num /= 10;
-        }
-        return sum;
+    void printMST(int parent[], int graph[][], int V) {
+        System.out.println("Edge   Weight");
+        for (int i = 1; i < V; i++)
+            System.out.println(parent[i] + " - " + i + "    " + graph[i][parent[i]]);
     }
 
-    public int findNumberWithDigitSum(int targetSum) {
-        // Sort list based on digit sum, and for ties by number value
-        Collections.sort(numbers, new Comparator<Integer>() {
-            public int compare(Integer a, Integer b) {
-                int sumA = digitSum(a);
-                int sumB = digitSum(b);
-                if (sumA != sumB) return Integer.compare(sumA, sumB);
-                else return Integer.compare(a, b);
-            }
-        });
+    void primMST(int graph[][], int V) {
+        int parent[] = new int[V];
+        int key[] = new int[V];
+        boolean mstSet[] = new boolean[V];
 
-        // Binary search for target digit sum
-        int low = 0, high = numbers.size() - 1;
-        int result = -1;
-
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            int midDigitSum = digitSum(numbers.get(mid));
-
-            if (midDigitSum == targetSum) {
-                result = numbers.get(mid);
-                // Continue searching left for smaller number with same digit sum
-                high = mid - 1;
-            } else if (midDigitSum < targetSum) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
-            }
+        for (int i = 0; i < V; i++) {
+            key[i] = INF;
+            mstSet[i] = false;
         }
 
-        return result;
+        key[0] = 0;
+        parent[0] = -1;
+
+        for (int count = 0; count < V - 1; count++) {
+            int u = minKey(key, mstSet, V);
+            mstSet[u] = true;
+
+            for (int v = 0; v < V; v++)
+                if (graph[u][v] != 0 && !mstSet[v] && graph[u][v] < key[v]) {
+                    parent[v] = u;
+                    key[v] = graph[u][v];
+                }
+        }
+
+        printMST(parent, graph, V);
     }
-}
- 
-public class Main {
+
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
+        int V = scanner.nextInt();
 
-        int n = sc.nextInt();
-        List<Integer> list = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            list.add(sc.nextInt());
+        int graph[][] = new int[MAX_V][MAX_V];
+
+        for (int i = 0; i < V; i++) {
+            for (int j = 0; j < V; j++) {
+                graph[i][j] = scanner.nextInt();
+            }
         }
 
-        int d = sc.nextInt();
+        PrimMST mst = new PrimMST();
+        mst.primMST(graph, V);
 
-        NumberAnalyzer analyzer = new NumberAnalyzer(list);
-        int result = analyzer.findNumberWithDigitSum(d);
-        System.out.print(result);
-
-        sc.close();
+        scanner.close();
     }
 }
